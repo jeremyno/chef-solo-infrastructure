@@ -1,0 +1,13 @@
+{
+	"run_list": [ "rpi::watchdog", "rpi::keylogin", "rpi::shairport", "rpi::wireless" ],
+	"rpi" : {
+		"authorized_key" : "ssh-rsa some_key_here name@mybox"
+	},
+	"shairport" : {
+		"name" : "RPi"
+	},	
+	"wireless" : {
+		"ssid" : "MyNetwork",
+		"psk" : "MyNetworkPassword"
+	}
+}
