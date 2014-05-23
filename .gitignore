@@ -1,0 +1,4 @@
+cookbooks/*
+config/*
+resources/*
+.project
