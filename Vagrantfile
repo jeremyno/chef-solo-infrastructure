@@ -2,9 +2,9 @@ require 'pp'
 
 rootdir = File.dirname(__FILE__)
 
-def getProp(val, default)
-  unless val.nil?
-    return val
+def getProp(hash, val, default)
+  unless hash.nil? or hash[val].nil?
+    return hash[val]
   else
     return default
   end
@@ -20,18 +20,16 @@ Vagrant.configure("2") do |config|
     boxname = File.basename(cfgfile).gsub(/.json/,"")
     unless boxname == "example"
       config.vm.define boxname do |box|
-        displayname=basename+"-"+boxname
+        displayname=basename+"_"+boxname
 	      cfg = JSON.parse(IO.read(cfgfile))
 	      vboxcfg = cfg["virtualbox"]
 	      
-	      unless vboxcfg.nil?
-	        config.vm.provider :virtualbox do |vb|
-	          vb.customize ["modif  yvm", :id, "--memory", getProp(vboxcfg["memory"],"512")]
-	          vb.customize ["modifyvm", :id, "--cpus", getProp(vboxcfg["cpus"],"1")]
-	          vb.customize ["modifyvm", :id, "--cpuexecutioncap", getProp(vboxcfg["cpucap"],"100")]
-	          vb.name = displayname
-	        end
-	      end
+        config.vm.provider :virtualbox do |vb|
+          vb.name = displayname
+          vb.customize ["modifyvm", :id, "--memory", getProp(vboxcfg,"memory","512")]
+          vb.customize ["modifyvm", :id, "--cpus", getProp(vboxcfg,"cpus","1")]
+          vb.customize ["modifyvm", :id, "--cpuexecutioncap", getProp(vboxcfg,"cpucap","100")]
+        end
 	      
 	      config.vm.provision :chef_solo do |chef|
 	        chef.cookbooks_path = rootdir+"/cookbooks"
