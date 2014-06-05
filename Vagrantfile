@@ -21,35 +21,35 @@ Vagrant.configure("2") do |config|
     unless boxname == "example"
       config.vm.define boxname do |box|
         displayname=basename+"_"+boxname
-	      cfg = JSON.parse(IO.read(cfgfile))
-	      vboxcfg = cfg["virtualbox"]
-	      
+        cfg = JSON.parse(IO.read(cfgfile))
+        vboxcfg = cfg["virtualbox"]
+        
         config.vm.provider :virtualbox do |vb|
           vb.name = displayname
           vb.customize ["modifyvm", :id, "--memory", getProp(vboxcfg,"memory","512")]
           vb.customize ["modifyvm", :id, "--cpus", getProp(vboxcfg,"cpus","1")]
           vb.customize ["modifyvm", :id, "--cpuexecutioncap", getProp(vboxcfg,"cpucap","100")]
         end
-	      
-	      config.vm.provision :chef_solo do |chef|
-	        chef.cookbooks_path = rootdir+"/cookbooks"
-	        chef.roles_path = rootdir+"/roles"
-	        chef.json = cfg
-	        cfg["run_list"].each do |runme|
-	          match = runme.match(/(.*)\[(.*)\]/)
-	          
-	          if (match.nil?)
-	            chef.add_recipe runme
-	          elsif (match[1] == "recipe")
-	            chef.add_recipe match[2]
-	          elsif (match[1] == "role")
-	            chef.add_role match[2]
-	          else
-	            puts "unknown type: " + runme 
-	          end
-	        end
-	      end
+        
+        config.vm.provision :chef_solo do |chef|
+          chef.cookbooks_path = rootdir+"/cookbooks"
+          chef.roles_path = rootdir+"/roles"
+          chef.json = cfg
+          cfg["run_list"].each do |runme|
+            match = runme.match(/(.*)\[(.*)\]/)
+            
+            if (match.nil?)
+              chef.add_recipe runme
+            elsif (match[1] == "recipe")
+              chef.add_recipe match[2]
+            elsif (match[1] == "role")
+              chef.add_role match[2]
+            else
+              puts "unknown type: " + runme 
+            end
+          end
+        end
       end
-	end
+    end
   end 
 end
