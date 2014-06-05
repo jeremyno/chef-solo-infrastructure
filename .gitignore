@@ -2,3 +2,4 @@ cookbooks/*
 config/*
 resources/*
 .project
+.vagrant/
